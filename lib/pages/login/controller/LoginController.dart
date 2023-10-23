@@ -16,7 +16,7 @@ class LoginController extends GetxController {
   RxBool keyboardVisible = false.obs;
   LoginRequestModel? req;
 
-  TextEditingController phone = TextEditingController();
+  TextEditingController username = TextEditingController();
   TextEditingController password = TextEditingController();
 
   bool? modalStatus;
@@ -30,7 +30,7 @@ class LoginController extends GetxController {
   }
 
   cleanDataInputLogin() {
-    phone.clear();
+    username.clear();
     password.clear();
   }
 
@@ -47,28 +47,30 @@ class LoginController extends GetxController {
 
   onSubmit() async {
     isApiCallProcess.value = true;
-    if (phone.text == "" || password.text == "") {
+    if (username.text == "" || password.text == "") {
       isApiCallProcess.value = false;
 
       Get.dialog(
           CustomAlertDialog(
-            title: "Terjadi Kesalahan",
-            image: 'assets/img/dialog/warning.png',
-            message: "Ada field yang belum terisi",
+            title: errorTitle,
+            // image: value.data!.icon!,
+            message: emptyForm,
             onNegativePressed: () async {
               Navigator.of(Get.overlayContext!, rootNavigator: true).pop();
             },
-            onPostivePressed: () {},
-            positiveBtnText: '',
+            onPostivePressed: () {
+              Get.back();
+            },
+            positiveBtnText: 'Tutup',
           ),
           barrierDismissible: true);
     } else {
-      isApiCallProcess.value = false;
-      req?.hp = phone.text;
+      req?.username = username.text;
       req?.password = password.text;
 
       postData(req!).then((value) async {
-        print(jsonEncode(value));
+        // print(jsonEncode(value));
+        isApiCallProcess.value = false;
         if (value.statusCode == 200 || value.statusCode == 201) {
           cleanDataInputLogin();
           loadNewData();
@@ -76,28 +78,32 @@ class LoginController extends GetxController {
           Get.offNamedUntil('/home', ModalRoute.withName('/home'));
           Get.dialog(
             CustomAlertDialog(
-              title: value.popup!.title!,
-              image: value.popup!.icon!,
-              message: value.popup!.content!,
+              title: value.message!,
+              // image: value.data!.icon!,
+              message: value.data!.message!,
               onNegativePressed: () async {
                 Navigator.of(Get.overlayContext!, rootNavigator: true).pop();
               },
-              onPostivePressed: () {},
-              positiveBtnText: '',
+              onPostivePressed: () {
+                Get.back();
+              },
+              positiveBtnText: 'Tutup',
             ),
             barrierDismissible: true,
           );
         } else {
           Get.dialog(
             CustomAlertDialog(
-              title: value.popup!.title!,
-              image: value.popup!.icon!,
-              message: value.popup!.content!,
+              title: value.message!,
+              // image: value.data!.icon!,
+              message: value.data!.message!,
               onNegativePressed: () async {
                 Navigator.of(Get.overlayContext!, rootNavigator: true).pop();
               },
-              onPostivePressed: () {},
-              positiveBtnText: '',
+              onPostivePressed: () {
+                Get.back();
+              },
+              positiveBtnText: 'Tutup',
             ),
             barrierDismissible: true,
           );
@@ -117,13 +123,6 @@ class LoginController extends GetxController {
         body: jsonEncode(requestModel), headers: headers2);
 
     await pref.setString("auth", response.headers['authentication'].toString());
-    await pref.setBool("openHomeFromLogin", true);
-    // print('RESPONSE ==== ');
-    // print(response.headers['authentication'].toString());
-    // print(pref.getString("auth").toString());
-    // print(response.body);
-
-    isApiCallProcess.value = false;
 
     if (response.statusCode >= 200) {
       return LoginResponseModel.fromJson(json.decode(response.body));

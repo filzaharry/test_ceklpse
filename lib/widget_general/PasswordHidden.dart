@@ -90,6 +90,13 @@ class _PasswordHidden extends State<PasswordHidden> {
             onChanged: (val) => widget.onChange!(val),
             onSaved: (val) => widget.onSaved!(val),
             obscureText: _obscureText,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                print('Mohon masukkan password Anda');
+                return 'Mohon masukkan password Anda';
+              }
+              return null;
+            },
           ),
         ),
       ],

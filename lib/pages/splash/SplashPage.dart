@@ -13,7 +13,6 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    controller.moveSplash();
   }
 
   @override

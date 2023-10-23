@@ -1,6 +1,4 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
-String apiUrl = dotenv.get("API", fallback: "");
+String apiUrl = "http://localhost:5000/api/";
 
 class Constants {
   Constants._();
@@ -8,20 +6,15 @@ class Constants {
   static const double avatarRadius = 45;
 }
 
-const String homeTitle = 'Dapatkan hadiah langsung dengan submit kode unik!';
-
 const String successTitle = 'Berhasil';
 const String successSubtitle = 'Berhasil';
 
 const String errorTitle = 'Terjadi Kesalahan';
 const String failedTitle = 'Gagal';
 const String errorSubtitle = 'Harap Coba Beberapa Saat Lagi';
+const String emptyForm = "Ada field yang belum terisi";
 
 const String modalBtnYakin = 'Yakin';
 const String modalBtnTidak = 'Tidak';
 const String modalBtnOk = 'Ok';
 const String modalBtnClose = 'OK';
-
-const String livechatEnd = 'Live Chat Selesai';
-const String livechatEndMessage =
-    'Terimakasih atas ulasan yang telah Anda berikan!\nSemoga informasi yang Anda dapatkan sudah cukup.';

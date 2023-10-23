@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test_ceklpse/pages/login/controller/LoginController.dart';
 import 'package:flutter_test_ceklpse/widget_general/PasswordHidden.dart';
 import 'package:flutter_test_ceklpse/widget_general/custombutton/FillButtonPrimary.dart';
@@ -12,8 +13,16 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   LoginController loginC = Get.put(LoginController());
   final _formKey = GlobalKey<FormState>();
-  String hp = '';
-  String password = '';
+
+  void validateAndSave() {
+    final FormState form = _formKey.currentState!;
+    if (form.validate()) {
+      loginC.onSubmit();
+      print('Form is valid');
+    } else {
+      print('Form is invalid');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,89 +30,92 @@ class _LoginFormState extends State<LoginForm> {
       key: _formKey,
       child: Column(
         children: [
-          TextFormField(
-            // controller: loginC.hp,
-            keyboardType: TextInputType.number,
-            textInputAction: TextInputAction.done,
-            decoration: new InputDecoration(
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 15,
-                vertical: 12,
-              ),
-              hintText: 'No. Whatsapp',
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Color(0xFF234431), width: 1),
-                borderRadius: new BorderRadius.circular(5.0),
-              ),
-              border: OutlineInputBorder(
-                borderSide: BorderSide(color: Color(0xFF234431), width: 1),
-                borderRadius: new BorderRadius.circular(5.0),
-              ),
-            ),
-            onChanged: (value) {
-              setState(() {
-                hp = value;
-              });
-            },
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter some text';
-              }
-              return null;
-            },
-          ),
-          SizedBox(height: 10),
-          PasswordHidden(
-            // controller: loginC.password,
-            field: 'Kata Sandi',
-            onChange: (value) {
-              setState(() {
-                password = value;
-              });
-            },
-          ),
-          SizedBox(height: 20),
-          new Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              GestureDetector(
-                onTap: () {
-                  loginC.cleanDataInputLogin();
-                  Get.toNamed('/forgotpass');
-                },
-                child: new Text(
-                  "Lupa Kata Sandi",
-                  style: new TextStyle(
-                    shadows: [
-                      Shadow(color: Colors.black, offset: Offset(0, -5))
+          Stack(
+            alignment: Alignment.center,
+            clipBehavior: Clip.none,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(bottom: 20),
+                child: Container(
+                  width: MediaQuery.of(context).size.width / 1.15,
+                  child: Column(
+                    children: [
+                      SizedBox(height: 20),
+                      Container(
+                        margin: EdgeInsets.symmetric(horizontal: 30),
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 10.0,
+                              ),
+                              child: new TextFormField(
+                                controller: loginC.username,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(
+                                    16,
+                                  )
+                                ],
+                                keyboardType: TextInputType.numberWithOptions(
+                                  signed: true,
+                                  decimal: true,
+                                ),
+                                decoration: FormDecoration(
+                                  'Username',
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    print('Mohon masukkan username anda');
+                                    return 'Mohon masukkan username anda';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            PasswordHidden(
+                              controller: loginC.password,
+                              field: 'Kata Sandi',
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 80),
                     ],
-                    color: Colors.transparent,
-                    decorationColor: Colors.black,
-                    decoration: TextDecoration.underline,
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                child: GestureDetector(
+                  onTap: () => validateAndSave(),
+                  child: FillButtonPrimary(
+                    text: 'Mulai',
+                    // type: welcomeC.toggleButton == true ? 1 : 0,
                   ),
                 ),
               ),
             ],
           ),
-          SizedBox(
-            height: 30,
-          ),
-          GestureDetector(
-            onTap: () {
-              if (hp != "" && password != "") {
-                if (_formKey.currentState!.validate()) {
-                  loginC.onSubmit();
-                }
-              }
-            },
-            child: FillButtonPrimary(
-              text: "LOGIN",
-              type: hp != "" && password != "" ? 0 : 1,
-            ),
-          ),
         ],
+      ),
+    );
+  }
+
+  InputDecoration FormDecoration(String name) {
+    return new InputDecoration(
+      contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+      hintText: name,
+      // labelText: name,
+      filled: true,
+      fillColor: Colors.white,
+      hintStyle: TextStyle(color: Colors.black, fontSize: 14),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.black, width: 1),
+        borderRadius: new BorderRadius.circular(14),
+      ),
+      border: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.black, width: 1),
+        borderRadius: new BorderRadius.circular(14),
       ),
     );
   }
